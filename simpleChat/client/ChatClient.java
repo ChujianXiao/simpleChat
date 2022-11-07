@@ -17,6 +17,7 @@ import java.io.*;
  * @author Fran&ccedil;ois B&eacute;langer
  * @version July 2000
  */
+
 public class ChatClient extends AbstractClient
 {
   //Instance variables **********************************************
@@ -26,6 +27,8 @@ public class ChatClient extends AbstractClient
    * the display method in the client.
    */
   ChatIF clientUI; 
+  
+  private String loginID;
 
   
   //Constructors ****************************************************
@@ -38,12 +41,18 @@ public class ChatClient extends AbstractClient
    * @param clientUI The interface type variable.
    */
   
-  public ChatClient(String host, int port, ChatIF clientUI) 
+  public ChatClient(String loginID, String host, int port, ChatIF clientUI) 
     throws IOException 
   {
     super(host, port); //Call the superclass constructor
     this.clientUI = clientUI;
+    this.loginID = loginID;
     openConnection();
+    try{
+    	sendToServer("#login "+ loginID);
+    }catch(Exception e) {
+    	System.out.println("An error has occured when sending login ID to server.");
+    }
   }
 
   
@@ -113,18 +122,17 @@ public class ChatClient extends AbstractClient
 			  break;
 		  }
 	  }else{
-
+		  try
+		    {
+		      sendToServer(message);
+		    }
+		    catch(IOException e)
+		    {
+		      clientUI.display
+		        ("Could not send message to server.  Terminating client.");
+		      quit();
+		    }
 	  }
-    try
-    {
-      sendToServer(message);
-    }
-    catch(IOException e)
-    {
-      clientUI.display
-        ("Could not send message to server.  Terminating client.");
-      quit();
-    }
   }
   
    /**
