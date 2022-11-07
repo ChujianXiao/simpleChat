@@ -34,7 +34,7 @@ public class EchoServer extends AbstractServer
    *
    * @param port The port number to connect on.
    */
-  public EchoServer(int port) 
+  public EchoServer(int port, ServerConsole serverConsole) 
   {
     super(port);
     this.serverConsole = serverConsole;
@@ -52,10 +52,11 @@ public class EchoServer extends AbstractServer
   public void handleMessageFromClient
     (Object msg, ConnectionToClient client)
   {
+	  System.out.println("Message received: " + msg + " from " + client.getInfo("loginID"));
 	  String message = msg.toString();
 	  if(message.trim().charAt(0) == '#') {
 		  String[] splitMsg = message.split(" ");
-		  if(splitMsg[0] == "#login") {
+		  if(splitMsg[0].equals("#login")) {
 			  if(splitMsg.length > 1) {
 				  if(client.getInfo("loginID") == null){
 					  client.setInfo("loginID", splitMsg[1]);
@@ -77,7 +78,6 @@ public class EchoServer extends AbstractServer
 			  }
 		  }
 	  }else {
-		  System.out.println("Message received: " + msg + " from " + client.getInfo("loginID"));
 		  this.sendToAllClients(msg);
 	  }
   }
@@ -162,41 +162,6 @@ public class EchoServer extends AbstractServer
 	  }else{
 
 	  }
-  }
-  
-  //Class methods ***************************************************
-  
-  /**
-   * This method is responsible for the creation of 
-   * the server instance (there is no UI in this phase).
-   *
-   * @param args[0] The port number to listen on.  Defaults to 5555 
-   *          if no argument is entered.
-   */
-  public static void main(String[] args) 
-  {
-    int port = 0; //Port to listen on
-
-    try
-    {
-      port = Integer.parseInt(args[0]); //Get port from command line
-    }
-    catch(Throwable t)
-    {
-      port = DEFAULT_PORT; //Set port to 5555
-    }
-	
-    EchoServer sv = new EchoServer(port);
-    
-    try 
-    {
-      sv.listen(); //Start listening for connections
-    } 
-    catch (Exception ex) 
-    {
-      System.out.println("ERROR - Could not listen for clients!");
-      ex.printStackTrace();
-    }
   }
 }
 //End of EchoServer class

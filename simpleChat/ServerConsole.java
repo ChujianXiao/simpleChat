@@ -34,7 +34,16 @@ public class ServerConsole implements ChatIF{
 	 */
 	public ServerConsole(int port) 
 	{
-		server = new EchoServer(port);
+		server = new EchoServer(port,this);
+		try 
+	    {
+	      server.listen(); //Start listening for connections
+	    } 
+	    catch (Exception ex) 
+	    {
+	      System.out.println("ERROR - Could not listen for clients!");
+	      ex.printStackTrace();
+	    }
 
 		// Create scanner object to read from console
 		fromConsole = new Scanner(System.in); 
@@ -69,26 +78,29 @@ public class ServerConsole implements ChatIF{
 		System.out.println("> " + message);
 	}
 
+	
 	//Class methods ***************************************************
+	  
+	  /**
+	   * This method is responsible for the creation of 
+	   * the server UI
+	   *
+	   * @param args[0] The port number to listen on.  Defaults to 5555 
+	   *          if no argument is entered.
+	   */
+	  public static void main(String[] args) 
+	  {
+	    int port = 0; //Port to listen on
 
-	/**
-	 * This method is responsible for the creation of the Server UI.
-	 *
-	 * @param args[0] The  port of the server.
-	 */
-	public static void main(String[] args) 
-	{
-		int port;
-		try
-		{
-			port = Integer.parseInt(args[0]);
-		}
-		catch(ArrayIndexOutOfBoundsException e)
-		{
-			port = DEFAULT_PORT;
-		}
-
-		ServerConsole server = new ServerConsole(port);
-		server.accept();  //Wait for console data
-	}
+	    try
+	    {
+	      port = Integer.parseInt(args[0]); //Get port from command line
+	    }
+	    catch(Throwable t)
+	    {
+	      port = DEFAULT_PORT; //Set port to 5555
+	    }
+	    ServerConsole serverCons = new ServerConsole(port);
+	    serverCons.accept();  //Wait for console data
+	  }
 }

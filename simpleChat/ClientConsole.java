@@ -128,7 +128,7 @@ public class ClientConsole implements ChatIF
     }
     catch(ArrayIndexOutOfBoundsException e)
     {
-      System.out.println("Must provide loginID.");
+      System.out.println("Error: Must provide loginID.");
       throw e;
     }
   
