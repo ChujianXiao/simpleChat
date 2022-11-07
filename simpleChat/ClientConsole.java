@@ -62,7 +62,6 @@ public class ClientConsole implements ChatIF
     {
       System.out.println("Error: Can't setup connection!"
                 + " Terminating client.");
-      exception.printStackTrace();
       System.exit(1);
     }
     
@@ -142,7 +141,7 @@ public class ClientConsole implements ChatIF
     }
     try
     {
-       port = Integer.parseInt(args[1]);
+       port = Integer.parseInt(args[2]);
     }
     catch(ArrayIndexOutOfBoundsException e)
     {

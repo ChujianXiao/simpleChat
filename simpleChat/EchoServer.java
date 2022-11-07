@@ -78,7 +78,7 @@ public class EchoServer extends AbstractServer
 			  }
 		  }
 	  }else {
-		  this.sendToAllClients(msg);
+		  this.sendToAllClients(client.getInfo("loginID") + ": " + msg.toString());
 	  }
   }
     
@@ -108,7 +108,7 @@ public class EchoServer extends AbstractServer
    */
   protected void clientConnected(ConnectionToClient client) 
   {
-	  System.out.println("Client " + client.toString() + " has connected.");
+	  System.out.println("Client " + client.getInfo("loginID") + " has connected.");
   }
   
   /**
@@ -116,7 +116,7 @@ public class EchoServer extends AbstractServer
    * when a client has disconnected.
    */
   synchronized protected void clientDisconnected(ConnectionToClient client) {
-	  System.out.println("Client " + client.toString() + " has disconnected.");
+	  System.out.println("Client " + client.getInfo("loginID") + " has disconnected.");
   }
   
   public void handleMessageFromServerUI(String message)
@@ -150,8 +150,12 @@ public class EchoServer extends AbstractServer
 			  }
 			  break;
 		  case "#start":
-			  if(isListening() == false && getNumberOfClients() == 0) {
-				  run();
+			  if(isListening() == false) {
+				  try {
+					  listen();
+				  }catch(IOException e) {
+					  serverConsole.display("Unable to continue listening");
+				  }
 			  }else {
 				  serverConsole.display("Unable to start, not closed.");
 			  }
@@ -160,7 +164,7 @@ public class EchoServer extends AbstractServer
 			  break;
 		  }
 	  }else{
-
+		  this.sendToAllClients("SERVER MESSAGE: " + message);
 	  }
   }
 }

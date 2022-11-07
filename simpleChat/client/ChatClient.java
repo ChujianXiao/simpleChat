@@ -136,11 +136,11 @@ public class ChatClient extends AbstractClient
   }
   
    /**
-   * This method makes the client quit and prints a message when the server has closed.
+   * This method makes the client quit and prints a message when the connection has ended.
    */
   @Override
   public void connectionClosed() {
-	  clientUI.display("Server closed, quiting");
+	  clientUI.display("Closing Connection.");
   }
   
   /**
@@ -149,7 +149,6 @@ public class ChatClient extends AbstractClient
    */
   public void connectionException(Exception exception) {
 	  clientUI.display("An Error has occured when client is waiting for messages.");
-	  exception.printStackTrace();
 	  quit();
   }
   /**
