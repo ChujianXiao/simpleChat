@@ -3,6 +3,8 @@
 // license found at www.lloseng.com 
 
 
+import java.io.IOException;
+
 import ocsf.server.*;
 
 /**
@@ -24,6 +26,7 @@ public class EchoServer extends AbstractServer
    */
   final public static int DEFAULT_PORT = 5555;
   
+  ServerConsole serverConsole;
   //Constructors ****************************************************
   
   /**
@@ -34,6 +37,7 @@ public class EchoServer extends AbstractServer
   public EchoServer(int port) 
   {
     super(port);
+    this.serverConsole = serverConsole;
   }
 
   
@@ -48,8 +52,8 @@ public class EchoServer extends AbstractServer
   public void handleMessageFromClient
     (Object msg, ConnectionToClient client)
   {
-    System.out.println("Message received: " + msg + " from " + client);
-    this.sendToAllClients(msg);
+    	System.out.println("Message received: " + msg + " from " + client);
+		this.sendToAllClients(msg);
   }
     
   /**
@@ -70,6 +74,68 @@ public class EchoServer extends AbstractServer
   {
     System.out.println
       ("Server has stopped listening for connections.");
+  }
+  
+  /**
+   * This method overrides the one in the superclass.  Called
+   * when a client has connected.
+   */
+  protected void clientConnected(ConnectionToClient client) 
+  {
+	  System.out.println("Client " + client.toString() + " has connected.");
+  }
+  
+  /**
+   * This method overrides the one in the superclass.  Called
+   * when a client has disconnected.
+   */
+  synchronized protected void clientDisconnected(ConnectionToClient client) {
+	  System.out.println("Client " + client.toString() + " has disconnected.");
+  }
+  
+  public void handleMessageFromServerUI(String message)
+  {
+	  if(message.trim().charAt(0) == '#') {
+		  String[] splitMsg = message.split(" ");
+		  switch(splitMsg[0]) {
+		  case "#quit":
+			  try {
+				  close();
+			  }catch(Exception e) {
+				  e.printStackTrace();
+			  }
+			  System.exit(0);
+			  break;
+		  case "#stop":
+			  stopListening();
+			  break;
+		  case "#close":
+			  try {
+				  close();
+			  }catch(Exception e) {
+				  e.printStackTrace();
+			  }
+			  break;
+		  case "#setport":
+			  if(isListening() == false && getNumberOfClients() == 0) {
+				  setPort(Integer.parseInt(splitMsg[2]));
+			  }else {
+				  serverConsole.display("Unable to set port, not closed yet.");
+			  }
+			  break;
+		  case "#start":
+			  if(isListening() == false && getNumberOfClients() == 0) {
+				  run();
+			  }else {
+				  serverConsole.display("Unable to start, not closed.");
+			  }
+		  case "#getport":
+			  serverConsole.display(String.valueOf(this.getPort()));
+			  break;
+		  }
+	  }else{
+
+	  }
   }
   
   //Class methods ***************************************************
@@ -103,6 +169,7 @@ public class EchoServer extends AbstractServer
     catch (Exception ex) 
     {
       System.out.println("ERROR - Could not listen for clients!");
+      ex.printStackTrace();
     }
   }
 }

@@ -66,6 +66,55 @@ public class ChatClient extends AbstractClient
    */
   public void handleMessageFromClientUI(String message)
   {
+	  if(message.trim().charAt(0) == '#') {
+		  String[] splitMsg = message.split(" ");
+		  switch(splitMsg[0]) {
+		  case "#quit":
+			  quit();
+			  System.exit(0);
+			  break;
+		  case "#logoff":
+			  try
+			  {
+				 closeConnection();
+			  }
+			  catch(IOException e) {}
+			  break;
+		  case "#sethost":
+			  if(isConnected() == true) {
+				  setHost(splitMsg[2]);
+			  }else {
+				  clientUI.display("Unable to set host, not disconnected yet.");
+			  }
+			  break;
+		  case "#setport":
+			  if(isConnected() == true) {
+				  setPort(Integer.parseInt(splitMsg[2]));
+			  }else {
+				  clientUI.display("Unable to set port, not disconnected yet.");
+			  }
+			  break;
+		  case "#login":
+			  if(isConnected() == true) {
+				  try {
+					  openConnection();
+				  }catch(IOException exception) {
+					  clientUI.display("Error when trying to connect to server.");
+				  }
+			  }else {
+				  clientUI.display("You are already logged in.");
+			  }
+			  break;
+		  case "#gethost":
+			  clientUI.display(this.getHost());
+			  break;
+		  case "#getport":
+			  clientUI.display(String.valueOf(this.getPort()));
+			  break;
+		  }
+	  }else{
+
+	  }
     try
     {
       sendToServer(message);
@@ -78,6 +127,23 @@ public class ChatClient extends AbstractClient
     }
   }
   
+   /**
+   * This method makes the client quit and prints a message when the server has closed.
+   */
+  @Override
+  public void connectionClosed() {
+	  clientUI.display("Server closed, quiting");
+  }
+  
+  /**
+   * This method is called every time an exception is thrown when the client is waiting for messages
+   * from the server.
+   */
+  public void connectionException(Exception exception) {
+	  clientUI.display("An Error has occured when client is waiting for messages.");
+	  exception.printStackTrace();
+	  quit();
+  }
   /**
    * This method terminates the client.
    */
